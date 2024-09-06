@@ -1,5 +1,6 @@
-0.2.15 (20XX-XX-XX)
+0.2.15 (2024-09-06)
   * Internal update to track latest roxido framework.
+  * Update for CRAN compliance in reporting rustc version during installation.
 
 0.2.13 (2023-07-14)
   * Adjust "SystemRequirements" as per
