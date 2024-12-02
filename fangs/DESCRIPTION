@@ -23,7 +23,7 @@ Authors@R: c(person(given = "David B.", family = "Dahl", role = c("aut", "cre"),
 Description: A neighborhood-based, greedy search algorithm is performed to estimate a feature allocation by minimizing the expected loss based on posterior samples from the feature allocation distribution. The method is currently under peer review but an earlier draft is available in Dahl, Johnson, and Andros (2022+) <doi:10.48550/arXiv.2207.13824>.
 License: MIT + file LICENSE | Apache License 2.0
 URL: https://github.com/dbdahl/fangs
-BugReports: https://github.com/dbdahl/fangs/issues
+BugReports: https://github.com/dbdahl/fangs-package/issues
 Depends: R (>= 4.2.0)
 SystemRequirements: Cargo (Rust's package manager), rustc (>= 1.66.1)
 Encoding: UTF-8
