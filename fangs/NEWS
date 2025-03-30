@@ -1,3 +1,8 @@
+0.2.18 (2025-03-21)
+  * Internal update to track latest roxido framework.
+  * Update for CRAN compliance regarding "WARNINGs about calling bad
+    entry points in the "compiled code" check.
+
 0.2.15 (2024-09-06)
   * Internal update to track latest roxido framework.
   * Update for CRAN compliance in reporting rustc version during installation.

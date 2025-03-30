@@ -1,3 +1,4 @@
+// The 'roxido_registration' macro is called at the start of the 'lib.rs' file.
 roxido_registration!();
 use roxido::*;
 
