@@ -77,8 +77,7 @@ pub fn cost<T>(input: &Matrix<T>, row: &[usize]) -> T
 where
     T: LapJVCost,
 {
-    (0..row.len())
-        .fold(T::zero(), |acc, i| acc + input[(i, row[i])])
+    (0..row.len()).fold(T::zero(), |acc, i| acc + input[(i, row[i])])
 }
 
 #[derive(Clone)]
@@ -117,7 +116,7 @@ where
             v,
             in_col,
             in_row,
-            cancellation
+            cancellation,
         }
     }
 
@@ -128,14 +127,18 @@ where
 
     fn check_cancelled(&self) -> Result<(), LapJVError> {
         if self.cancellation.is_cancelled() {
-            return Err(LapJVError { kind: ErrorKind::Cancelled });
+            return Err(LapJVError {
+                kind: ErrorKind::Cancelled,
+            });
         }
         Ok(())
     }
 
     pub fn solve(mut self) -> Result<(Vec<usize>, Vec<usize>), LapJVError> {
         if self.costs.dim().0 != self.costs.dim().1 {
-            return Err(LapJVError { kind: ErrorKind::Msg("Input error: matrix is not square") } );
+            return Err(LapJVError {
+                kind: ErrorKind::Msg("Input error: matrix is not square"),
+            });
         }
         self.ccrrt_dense();
 
@@ -180,7 +183,7 @@ where
                 in_row_not_set[i] = false;
             } else {
                 unique[i] = false;
-                self.in_col[j] = std::usize::MAX;
+                self.in_col[j] = usize::MAX;
             }
         }
 
@@ -232,14 +235,14 @@ where
                     // change the reduction of the minimum column to increase the minimum
                     // reduced cost in the row to the subminimum.
                     self.v[j1] = v1_new;
-                } else if i0 != std::usize::MAX && j2.is_some() {
+                } else if i0 != usize::MAX && j2.is_some() {
                     // minimum and subminimum equal.
                     // minimum column j1 is assigned.
                     // swap columns j1 and j2, as j2 may be unassigned.
                     j1 = j2.unwrap();
                     i0 = self.in_col[j1];
                 }
-                if i0 != std::usize::MAX {
+                if i0 != usize::MAX {
                     // minimum column j1 assigned earlier.
                     if v1_lowers {
                         // put in current k, and go back to that k.
@@ -253,7 +256,7 @@ where
                         new_free_rows += 1;
                     }
                 }
-            } else if i0 != std::usize::MAX {
+            } else if i0 != usize::MAX {
                 self.free_rows[new_free_rows] = i0;
                 new_free_rows += 1;
             }
@@ -268,13 +271,13 @@ where
         let dim = self.dim;
         let mut pred = vec![0; dim];
 
-        let free_rows = std::mem::replace(&mut self.free_rows, vec![]);
+        let free_rows = std::mem::take(&mut self.free_rows);
         for freerow in free_rows {
             trace!("looking at freerow={}", freerow);
 
             self.check_cancelled()?;
 
-            let mut i = std::usize::MAX;
+            let mut i = usize::MAX;
             let mut k = 0;
             let mut j = self.find_path_dense(freerow, &mut pred);
             debug_assert!(j < dim);
@@ -284,7 +287,9 @@ where
                 std::mem::swap(&mut j, &mut self.in_row[i]);
                 k += 1;
                 if k > dim {
-                    return Err(LapJVError { kind: ErrorKind::Msg("Error: ca_dense will not finish") });
+                    return Err(LapJVError {
+                        kind: ErrorKind::Msg("Error: ca_dense will not finish"),
+                    });
                 }
             }
         }
@@ -304,10 +309,10 @@ where
 
         // Dijkstra shortest path algorithm.
         // runs until unassigned column added to shortest path tree.
-        for i in 0..dim {
+        for (i, item) in pred.iter_mut().enumerate().take(dim) {
             collist.push(i);
             d.push(self.reduced_cost(start_i, i));
-            pred[i] = start_i;
+            *item = start_i;
         }
 
         trace!("d: {:?}", d);
@@ -321,7 +326,7 @@ where
                 // check if any of the minimum columns happens to be unassigned.
                 // if so, we have an augmenting path right away.
                 for &j in collist.iter().take(hi).skip(lo) {
-                    if self.in_col[j] == std::usize::MAX {
+                    if self.in_col[j] == usize::MAX {
                         final_j = Some(j);
                     }
                 }
@@ -361,7 +366,8 @@ where
             let mind = d[j];
             let h = self.reduced_cost(i, j) - mind;
             // For all columns in TODO
-            for k in hi..collist.len() {
+            let lower_bound = hi;
+            for k in lower_bound..collist.len() {
                 let j = collist[k];
                 let cred_ij = self.reduced_cost(i, j) - h;
                 if cred_ij < d[j] {
@@ -369,7 +375,7 @@ where
                     pred[j] = i;
                     if (cred_ij - mind).abs() < T::epsilon() {
                         // if cred_ij == mind {
-                        if self.in_col[j] == std::usize::MAX {
+                        if self.in_col[j] == usize::MAX {
                             return Some(j);
                         }
                         collist[k] = collist[hi];
@@ -402,7 +408,8 @@ where
 {
     let mut hi = lo + 1;
     let mut mind = d[collist[lo]];
-    for k in hi..dim {
+    let lower_bound = hi;
+    for k in lower_bound..dim {
         let j = collist[k];
         let h = d[j];
         if h <= mind {
@@ -450,7 +457,6 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rand;
 
     #[test]
     fn it_works() {
@@ -469,7 +475,12 @@ mod tests {
         let cancellation = lapjv.cancellation();
         cancellation.cancel();
         let result = lapjv.solve();
-        assert!(matches!(result, Err(LapJVError { kind: ErrorKind::Cancelled })));
+        assert!(matches!(
+            result,
+            Err(LapJVError {
+                kind: ErrorKind::Cancelled
+            })
+        ));
     }
 
     #[test]
@@ -483,7 +494,7 @@ mod tests {
     #[test]
     fn test_solve_inf1() {
         let c = vec![
-            std::f64::INFINITY,
+            f64::INFINITY,
             643.0,
             717.0,
             2.0,
@@ -493,7 +504,7 @@ mod tests {
             235.0,
             376.0,
             839.0,
-            std::f64::INFINITY,
+            f64::INFINITY,
             141.0,
             799.0,
             180.0,
@@ -503,7 +514,7 @@ mod tests {
             822.0,
             421.0,
             42.0,
-            std::f64::INFINITY,
+            f64::INFINITY,
             369.0,
             831.0,
             67.0,
@@ -513,7 +524,7 @@ mod tests {
             529.0,
             458.0,
             524.0,
-            std::f64::INFINITY,
+            f64::INFINITY,
             649.0,
             287.0,
             910.0,
@@ -523,7 +534,7 @@ mod tests {
             92.0,
             217.0,
             555.0,
-            std::f64::INFINITY,
+            f64::INFINITY,
             81.0,
             568.0,
             241.0,
@@ -533,7 +544,7 @@ mod tests {
             652.0,
             630.0,
             788.0,
-            std::f64::INFINITY,
+            f64::INFINITY,
             822.0,
             788.0,
             166.0,
@@ -543,7 +554,7 @@ mod tests {
             568.0,
             449.0,
             214.0,
-            std::f64::INFINITY,
+            f64::INFINITY,
             469.0,
             584.0,
             633.0,
@@ -553,7 +564,7 @@ mod tests {
             500.0,
             317.0,
             391.0,
-            std::f64::INFINITY,
+            f64::INFINITY,
             581.0,
             183.0,
             420.0,
@@ -563,7 +574,7 @@ mod tests {
             516.0,
             639.0,
             356.0,
-            std::f64::INFINITY,
+            f64::INFINITY,
             921.0,
             67.0,
             33.0,
@@ -595,7 +606,7 @@ mod tests {
     fn test_find_umins() {
         let m = Matrix::from_shape_vec((3, 3), vec![25.0, 0.0, 15.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0])
             .unwrap();
-        let result = find_umins_plain(m.row(0), &vec![0.0, 0.0, 0.0]);
+        let result = find_umins_plain(m.row(0), &[0.0, 0.0, 0.0]);
         println!("Result: {:?}", result);
         assert_eq!(result, (0.0, 15.0, 1, Some(2)));
     }

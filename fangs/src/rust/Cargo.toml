@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 publish = false
-rust-version = "1.67.1"
+rust-version = "1.81.0"
 
 [lib]
 crate-type = ["staticlib"]
@@ -17,9 +17,9 @@ lto = "thin"
 [dependencies]
 roxido = { path="roxido" }
 lapjv = { path="lapjv-rust" }
-ndarray = "0.15.6"
-rand = "0.8.5"
-rand_pcg = "0.3.1"
+ndarray = "0.16.1"
+rand = "0.9.0"
+rand_pcg = "0.9.0"
 rayon = "1.7.0"
-itertools = "0.11.0"
+itertools = "0.14.0"
 approx = "0.5.1"

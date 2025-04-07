@@ -1,6 +1,7 @@
 [package]
 name = "lapjv"
-version = "0.2.1"
+version = "0.2.2"
+edition = "2021"
 authors = ["Andrii Dmytrenko <andrii.dmytrenko@deliveroo.co.uk>"]
 description = "Linear Assignmment Problem solve using Jonker-Volgenant algorithm"
 license = "MIT"
@@ -23,10 +24,10 @@ maintenance = { status = "as-is" }
 nightly = []
 
 [dependencies]
-ndarray = "0.15"
+ndarray = "0.16"
 num-traits = "0.2"
 log = "0.4"
 
 [dev-dependencies]
-rand = "0.8"
+rand = "0.9"
 rustc_version = "0.4"

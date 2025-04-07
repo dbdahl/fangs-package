@@ -242,7 +242,7 @@ fn fangs(
                     |(z, loss, weight_matrices, _, n_accepts, when, rng)| {
                         let n_features = z.ncols();
                         let total_length = n_items * n_features;
-                        let index = index_1d_to_2d(rng.gen_range(0..total_length), n_features);
+                        let index = index_1d_to_2d(rng.random_range(0..total_length), n_features);
                         flip_bit(z, weight_matrices, a, index, &views);
                         let new_loss = expected_loss_from_weight_matrices(weight_matrices, &pool);
                         if new_loss < *loss {
