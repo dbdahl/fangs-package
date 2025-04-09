@@ -1,6 +1,7 @@
-0.2.19 (20YY-MM-DD)
+0.2.19 (2025-04-09)
   * Do not specify a build target and rely on the default choice.
-
+  * Latest Roxido framework.
+  
 0.2.18 (2025-03-21)
   * Internal update to track latest roxido framework.
   * Update for CRAN compliance regarding "WARNINGs about calling bad
