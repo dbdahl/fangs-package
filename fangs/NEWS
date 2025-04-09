@@ -1,4 +1,5 @@
-0.2.19 (2025-04-09)
+0.2.20 (2025-04-09)
+  * Update paper citation.
   * Do not specify a build target and rely on the default choice.
   * Latest Roxido framework.
   

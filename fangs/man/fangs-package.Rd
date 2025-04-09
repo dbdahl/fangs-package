@@ -5,7 +5,7 @@
 \alias{fangs-package}
 \title{fangs: Feature Allocation Neighborhood Greedy Search Algorithm}
 \description{
-A neighborhood-based, greedy search algorithm is performed to estimate a feature allocation by minimizing the expected loss based on posterior samples from the feature allocation distribution. The method is currently under peer review but an earlier draft is available in Dahl, Johnson, and Andros (2022+) \doi{10.48550/arXiv.2207.13824}.
+A neighborhood-based, greedy search algorithm is performed to estimate a feature allocation by minimizing the expected loss based on posterior samples from the feature allocation distribution. The method is described in Dahl, Johnson, and Andros (2023) "Comparison and Bayesian Estimation of Feature Allocations" \doi{10.1080/10618600.2023.2204136}.
 }
 \seealso{
 Useful links:

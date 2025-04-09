@@ -55,7 +55,7 @@
 #' @export
 #'
 #' @references
-#' D. B. Dahl, D. J. Johnson, R. J. Andros (2023+), 
+#' D. B. Dahl, D. J. Johnson, R. J. Andros (2023), 
 #' Comparison and Bayesian Estimation of Feature Allocations,
 #' Journal of Computational and Graphical Statistics,
 #' \doi{10.1080/10618600.2023.2204136}.
