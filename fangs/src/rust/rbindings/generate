@@ -46,7 +46,7 @@ set MSRV (cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].rust
 echo "MSRV: $MSRV"
 
 # Collect missing symbols from cargo check
-set missing Rf_error
+set missing Rf_error R_CallMethodDef R_registerRoutines R_useDynamicSymbols R_forceSymbols Rf_rnorm
 set missing $missing (cargo check 2>&1 | rg 'error.*cannot find.*in this scope' | rg -o '`[^`]+`' | tr -d '`' | sort -u)
 
 # Build up bindgen arguments

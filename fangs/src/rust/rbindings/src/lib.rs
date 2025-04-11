@@ -66,6 +66,67 @@ extern "C" {
 extern "C" {
     pub fn R_FlushConsole();
 }
+pub type DL_FUNC = ::std::option::Option<unsafe extern "C" fn() -> *mut ::std::os::raw::c_void>;
+pub type R_NativePrimitiveArgType = ::std::os::raw::c_uint;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct R_CMethodDef {
+    pub name: *const ::std::os::raw::c_char,
+    pub fun: DL_FUNC,
+    pub numArgs: ::std::os::raw::c_int,
+    pub types: *mut R_NativePrimitiveArgType,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of R_CMethodDef"][::std::mem::size_of::<R_CMethodDef>() - 32usize];
+    ["Alignment of R_CMethodDef"][::std::mem::align_of::<R_CMethodDef>() - 8usize];
+    ["Offset of field: R_CMethodDef::name"][::std::mem::offset_of!(R_CMethodDef, name) - 0usize];
+    ["Offset of field: R_CMethodDef::fun"][::std::mem::offset_of!(R_CMethodDef, fun) - 8usize];
+    ["Offset of field: R_CMethodDef::numArgs"]
+        [::std::mem::offset_of!(R_CMethodDef, numArgs) - 16usize];
+    ["Offset of field: R_CMethodDef::types"][::std::mem::offset_of!(R_CMethodDef, types) - 24usize];
+};
+pub type R_FortranMethodDef = R_CMethodDef;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct R_CallMethodDef {
+    pub name: *const ::std::os::raw::c_char,
+    pub fun: DL_FUNC,
+    pub numArgs: ::std::os::raw::c_int,
+}
+#[allow(clippy::unnecessary_operation, clippy::identity_op)]
+const _: () = {
+    ["Size of R_CallMethodDef"][::std::mem::size_of::<R_CallMethodDef>() - 24usize];
+    ["Alignment of R_CallMethodDef"][::std::mem::align_of::<R_CallMethodDef>() - 8usize];
+    ["Offset of field: R_CallMethodDef::name"]
+        [::std::mem::offset_of!(R_CallMethodDef, name) - 0usize];
+    ["Offset of field: R_CallMethodDef::fun"]
+        [::std::mem::offset_of!(R_CallMethodDef, fun) - 8usize];
+    ["Offset of field: R_CallMethodDef::numArgs"]
+        [::std::mem::offset_of!(R_CallMethodDef, numArgs) - 16usize];
+};
+pub type R_ExternalMethodDef = R_CallMethodDef;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct _DllInfo {
+    _unused: [u8; 0],
+}
+pub type DllInfo = _DllInfo;
+extern "C" {
+    pub fn R_registerRoutines(
+        info: *mut DllInfo,
+        croutines: *const R_CMethodDef,
+        callRoutines: *const R_CallMethodDef,
+        fortranRoutines: *const R_FortranMethodDef,
+        externalRoutines: *const R_ExternalMethodDef,
+    ) -> ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn R_useDynamicSymbols(info: *mut DllInfo, value: Rboolean) -> Rboolean;
+}
+extern "C" {
+    pub fn R_forceSymbols(info: *mut DllInfo, value: Rboolean) -> Rboolean;
+}
 pub type Rbyte = ::std::os::raw::c_uchar;
 pub type R_len_t = ::std::os::raw::c_int;
 pub type R_xlen_t = isize;
@@ -332,4 +393,7 @@ extern "C" {
 }
 extern "C" {
     pub fn SET_RAW_ELT(x: SEXP, i: R_xlen_t, v: Rbyte);
+}
+extern "C" {
+    pub fn Rf_rnorm(arg1: f64, arg2: f64) -> f64;
 }
