@@ -30,4 +30,5 @@ Encoding: UTF-8
 LazyData: TRUE
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Config/Roxido/Version: 25.04.11
+Config/Roxido/TemplateVersion: 26.03.04
+Config/Roxido/MinCLIVersion: 0.8.0

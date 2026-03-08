@@ -409,6 +409,24 @@ impl R {
         unsafe { R_NilValue.transmute_static() }
     }
 
+    /// Returns R's `NULL` value.
+    #[allow(non_snake_case)]
+    pub fn NULL() -> &'static RObject {
+        unsafe { R_NilValue.transmute_static() }
+    }
+
+    /// Returns R's `TRUE` value for storage mode "integer".
+    #[allow(non_snake_case)]
+    pub fn TRUE() -> i32 {
+        Rboolean_TRUE
+    }
+
+    /// Returns R's `TRUE` value for storage mode "integer".
+    #[allow(non_snake_case)]
+    pub fn FALSE() -> i32 {
+        Rboolean_FALSE
+    }
+
     /// Returns R's `NA` value for storage mode "double".
     pub fn na_f64() -> f64 {
         unsafe { R_NaReal }
@@ -535,7 +553,7 @@ pub enum RObjectEnum<'a> {
 
 impl RObject {
     // Convert to an enumeration of the supported variants.
-    pub fn enumerate(&self) -> RObjectEnum {
+    pub fn enumerate(&self) -> RObjectEnum<'_> {
         if self.is_vector() {
             let s: &RVector = unsafe { self.transmute() };
             if s.is_scalar() {
@@ -2132,7 +2150,7 @@ macro_rules! rlistlike {
             /// This allows Rust's [`HashMap`] methods to be used on the contents
             /// of the list, while still retaining the original list within
             /// the RListMap struct in the robj field.
-            pub fn make_map(&self) -> RListMap {
+            pub fn make_map(&self) -> RListMap<'_> {
                 let mut map = HashMap::new();
                 let names = self.get_names();
                 let len = names.len();
@@ -2175,8 +2193,7 @@ impl RExternalPtr {
     /// Move Rust object to an R external pointer.
     ///
     /// This *method* moves a Rust object to an R external pointer and then, as far as Rust is concerned, leaks the memory.
-    /// Thus the programmer is then responsible to release the memory by calling [`RExternalPtr::decode_val`]
-    /// unless `managed_By_r` is `true`.
+    /// R will automatically free the memory when the associated R object is collected.
     #[allow(clippy::mut_from_ref)]
     pub fn encode<'a, T>(x: T, tag: &str, pc: &'a Pc) -> &'a mut Self {
         Self::encode_full(x, tag.to_r(pc), true, pc)
@@ -2186,7 +2203,7 @@ impl RExternalPtr {
     ///
     /// This *method* moves a Rust object to an R external pointer and then, as far as Rust is concerned, leaks the memory.
     /// Thus the programmer is then responsible to release the memory by calling [`RExternalPtr::decode_val`]
-    /// unless `managed_By_r` is `true`.
+    /// unless `managed_by_r` is `true`.
     #[allow(clippy::mut_from_ref)]
     pub fn encode_full<'a, T>(
         x: T,
@@ -2217,9 +2234,39 @@ impl RExternalPtr {
         }
     }
 
+    /// Reconstitute an Rust object into an R external pointer.
+    ///
+    /// This *method* moves a Rust object to an R external pointer.
+    #[allow(clippy::mut_from_ref)]
+    pub fn reencode<'a, T, F: FnOnce(&RObject) -> T>(&mut self, f: F) {
+        unsafe {
+            if self.is_null() {
+                let ptr = Box::into_raw(Box::new(f(self.tag())));
+                R_SetExternalPtrAddr(self.sexp(), ptr as *mut c_void);
+                if Rf_getAttrib(self.sexp(), R_AtsignSymbol) == R_AtsignSymbol {
+                    unsafe extern "C" fn free<S>(sexp: SEXP) {
+                        let addr = R_ExternalPtrAddr(sexp);
+                        if addr.as_ref().is_none() {
+                            return;
+                        }
+                        let _ = Box::from_raw(addr as *mut S);
+                        R_ClearExternalPtr(sexp);
+                    }
+                    Rf_setAttrib(self.sexp(), R_AtsignSymbol, R_AtsignSymbol);
+                    R_RegisterCFinalizerEx(self.sexp(), Some(free::<T>), 0);
+                }
+            }
+        }
+    }
+
     /// Check if an external pointer is managed by R.
     pub fn is_managed_by_r(&self) -> bool {
         unsafe { Rf_getAttrib(self.sexp(), R_AtsignSymbol) == R_AtsignSymbol }
+    }
+
+    /// Check if an external pointer is null.
+    pub fn is_null(&self) -> bool {
+        self.address().is_null()
     }
 
     /// Move an R external pointer to a Rust object.
@@ -2291,6 +2338,11 @@ impl RExternalPtr {
         unsafe { R_ExternalPtrAddr(self.sexp()) }
     }
 
+    /// Get the memory address of the external pointer.
+    pub fn set_address(&self, addr: &mut c_void) {
+        unsafe { R_SetExternalPtrAddr(self.sexp(), addr) }
+    }
+
     /// Register the external pointer to be finalized.
     ///
     /// This allows the object to perform cleanup actions when no longer referenced in R.
@@ -2311,6 +2363,22 @@ impl RExternalPtr {
     ///
     pub fn tag(&self) -> &RObject {
         unsafe { R_ExternalPtrTag(self.sexp()).transmute(self) }
+    }
+
+    /// Get &str tag for an R external pointer.
+    ///
+    /// This method gets the &str tag associated with an R external pointer, which was set by [`RObject::as_external_ptr`].
+    /// It turns the empty string "" if the tag is not a character vector of length one.
+    ///
+    pub fn tag_str(&self) -> &str {
+        let tag = self.tag();
+        let Ok(tag) = tag.as_scalar() else {
+            return "";
+        };
+        let Ok(tag) = tag.as_char() else {
+            return "";
+        };
+        tag.get().unwrap_or("")
     }
 }
 
