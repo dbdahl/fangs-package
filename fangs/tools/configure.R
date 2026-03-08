@@ -267,12 +267,9 @@ discover_rust_dependency_files <- function(rust_dir) {
   files <- normalizePath(files, winslash = "/", mustWork = TRUE)
   rel <- substring(files, nchar(rust_dir) + 2L)
 
-  excluded_prefixes <- c("target/", "vendor/", ".cargo/", ".cargo-home/")
-  keep <- !vapply(
-    rel,
-    function(path) any(startsWith(path, excluded_prefixes)),
-    logical(1)
-  )
+  excluded_dirs <- c("target", "vendor", "\\.cargo", "\\.cargo-home")
+  excluded_pattern <- paste0("(^|/)(", paste(excluded_dirs, collapse = "|"), ")/")
+  keep <- !grepl(excluded_pattern, rel)
   rel <- rel[keep]
   rel <- rel[!(rel %in% c("librust.a", "roxido.txt"))]
   if (length(rel) < 1L) {
