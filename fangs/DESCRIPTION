@@ -1,31 +1,16 @@
 Package: fangs
 Title: Feature Allocation Neighborhood Greedy Search Algorithm
-Version: 0.2.21
+Version: 0.2.22
 Authors@R: c(person(given = "David B.", family = "Dahl", role = c("aut", "cre"), email = "dahl@stat.byu.edu", comment = c(ORCID = "0000-0002-8173-1547")),
     person(given = "R. Jacob", family = "Andros", role = c("aut"), email = "androsrj@gmail.com", comment = c(ORCID = "0000-0002-1289-385X")),
     person(given = "Devin J.", family = "Johnson", role = c("aut"), email = "devin.j.johnson7@gmail.com", comment = c(ORCID = "0000-0003-2619-6649")),
-    person(given = "Alex", family = "Crichton", email = "alex@alexcrichton.com", role = "ctb", comment = c("Rust crates: cfg-if, proc-macro2")),
-    person(given = "Andrii", family = "Dmytrenko", email = "andrii.dmytrenko@deliveroo.co.uk", role = "ctb", comment = c("Rust crate: lapjv")),
-    person(given = "Brendan", family = "Zabarauskas", email = "bjzaba@yahoo.com.au", role = "ctb", comment = c("Rust crate: approx")),
-    person(given = "David B.", family = "Dahl", email = "dahl@stat.byu.edu", role = "ctb", comment = c("Rust crates: roxido, roxido_macro")),
-    person(given = "David", family = "Tolnay", email = "dtolnay@gmail.com", role = "ctb", comment = c("Rust crates: proc-macro2, quote, syn, unicode-ident")),
-    person(given = "Jim", family = "Turner", role = "ctb", comment = c("Rust crate: ndarray")),
-    person(given = "Josh", family = "Stone", email = "cuviper@gmail.com", role = "ctb", comment = c("Rust crates: autocfg, rayon, rayon-core")),
-    person(given = "Niko", family = "Matsakis", email = "niko@alum.mit.edu", role = "ctb", comment = c("Rust crates: rayon, rayon-core")),
-    person(given = "R. Janis", family = "Goldschmidt", role = "ctb", comment = c("Rust crate: matrixmultiply")),
-    person(given = "The Cranelift Project Developers", role = "ctb", comment = c("Rust crate: wasi")),
-    person(given = "The CryptoCorrosion Contributors", role = "ctb", comment = c("Rust crates: ppv-lite86, rand_chacha")),
-    person(given = "The Rand Project Developers", role = "ctb", comment = c("Rust crates: getrandom, rand, rand_chacha, rand_core, rand_pcg")),
-    person(given = "The Rust Project Developers", role = "ctb", comment = c("Rust crates: libc, log, num-complex, num-integer, num-traits, rand, rand_chacha, rand_core")),
-    person(given = "Ulrik Sverdrup", family = "\"bluss\"", role = "ctb", comment = c("Rust crate: ndarray")),
-    person(given = "bluss", role = "ctb", comment = c("Rust crates: either, itertools, matrixmultiply, rawpointer")),
-    person())
+    person(given = "Authors of the dependency Rust crates", role = "ctb", comment = "see inst/AUTHORS file for details"))
 Description: A neighborhood-based, greedy search algorithm is performed to estimate a feature allocation by minimizing the expected loss based on posterior samples from the feature allocation distribution. The method is described in Dahl, Johnson, and Andros (2023) "Comparison and Bayesian Estimation of Feature Allocations" <doi:10.1080/10618600.2023.2204136>.
 License: MIT + file LICENSE | Apache License 2.0
 URL: https://github.com/dbdahl/fangs-package
 BugReports: https://github.com/dbdahl/fangs-package/issues
-Depends: R (>= 4.2.0)
-SystemRequirements: Cargo (Rust's package manager), rustc (>= 1.81.0)
+Depends: R (>= 4.3.0)
+SystemRequirements: Cargo (Rust's package manager), rustc
 Encoding: UTF-8
 LazyData: TRUE
 Roxygen: list(markdown = TRUE)

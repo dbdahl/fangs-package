@@ -1,43 +1,20 @@
-The authors are:
+This R package contains Rust code which depends on the Rust crates listed below.
+The source code is vendored in the R package and can also be found at
+https://crates.io/crates/XXXX, where XXXX is a crate name.
+The authors of these Rust crates are listed below.
 
-    David B. Dahl <dahl@stat.byu.edu> [aut, cre] (<https://orcid.org/0000-0002-8173-1547>)
-    R. Jacob Andros <androsrj@gmail.com> [aut] (<https://orcid.org/0000-0002-1289-385X>)
-    Devin J. Johnson <devin.j.johnson7@gmail.com> [aut] (<https://orcid.org/0000-0003-2619-6649>)
-    Authors of depending Rust crates [ctb]
-
-The depending Rust crates are in the 'src/rust' directory of the package source
-(including in the archive 'vendor.tar.xz') and give the authors as follows:
-
-approx        : Brendan Zabarauskas <bjzaba@yahoo.com.au>
-autocfg       : Josh Stone <cuviper@gmail.com>
-cfg-if        : Alex Crichton <alex@alexcrichton.com>
-either        : bluss
-getrandom     : The Rand Project Developers
-hermit-abi    : Stefan Lankes
-itertools     : bluss
-lapjv         : Andrii Dmytrenko <andrii.dmytrenko@deliveroo.co.uk>
-libc          : The Rust Project Developers
-log           : The Rust Project Developers
-matrixmultiply: R. Janis Goldschmidt, bluss
-memoffset     : Gilad Naaman <gilad.naaman@gmail.com>
-ndarray       : Jim Turner, Ulrik Sverdrup "bluss"
-num-complex   : The Rust Project Developers
-num-integer   : The Rust Project Developers
-num-traits    : The Rust Project Developers
-num_cpus      : Sean McArthur <sean@seanmonstar.com>
-ppv-lite86    : The CryptoCorrosion Contributors
-proc-macro2   : David Tolnay <dtolnay@gmail.com>, Alex Crichton <alex@alexcrichton.com>
-quote         : David Tolnay <dtolnay@gmail.com>
-rand          : The Rand Project Developers, The Rust Project Developers
-rand_chacha   : The Rand Project Developers, The Rust Project Developers, The CryptoCorrosion Contributors
-rand_core     : The Rust Project Developers, The Rand Project Developers
-rand_pcg      : The Rand Project Developers
-rawpointer    : bluss
-rayon         : Niko Matsakis <niko@alum.mit.edu>, Josh Stone <cuviper@gmail.com>
-rayon-core    : Niko Matsakis <niko@alum.mit.edu>, Josh Stone <cuviper@gmail.com>
-roxido        : David B. Dahl <dahl@stat.byu.edu>
-roxido_macro  : David B. Dahl <dahl@stat.byu.edu>
-scopeguard    : bluss
-syn           : David Tolnay <dtolnay@gmail.com>
-unicode-ident : David Tolnay <dtolnay@gmail.com>
-wasi          : The Cranelift Project Developers
+Alex Crichton <alex@alexcrichton.com>               : cfg-if, proc-macro2, wit-bindgen
+Andrii Dmytrenko <andrii.dmytrenko@deliveroo.co.uk> : lapjv
+bluss                                               : either, itertools, matrixmultiply, rawpointer
+Brendan Zabarauskas <bjzaba@yahoo.com.au>           : approx
+David B. Dahl <dahl@stat.byu.edu>                   : rbindings, roxido, roxido_macro
+David Tolnay <dtolnay@gmail.com>                    : proc-macro2, quote, semver, syn, unicode-ident
+Jack Wrenn <jswrenn@amazon.com>                     : zerocopy, zerocopy-derive
+Jim Turner                                          : ndarray
+Josh Stone <cuviper@gmail.com>                      : autocfg
+Joshua Liebow-Feeser <joshlf@google.com>            : zerocopy, zerocopy-derive
+R. Janis Goldschmidt                                : matrixmultiply
+The CryptoCorrosion Contributors                    : ppv-lite86, rand_chacha
+The Rand Project Developers                         : getrandom, rand, rand_chacha, rand_core, rand_pcg
+The Rust Project Developers                         : libc, log, num-complex, num-integer, num-traits, rand, rand_chacha, rand_core
+Ulrik Sverdrup "bluss"                              : ndarray

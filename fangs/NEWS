@@ -1,3 +1,6 @@
+0.2.22 (2025-03-07)
+  * Latest Roxido framework.
+
 0.2.21 (2025-04-10)
   * Update paper citation.
   * Do not specify a build target and rely on the default choice.
