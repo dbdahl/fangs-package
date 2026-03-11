@@ -264,7 +264,9 @@ discover_rust_dependency_files <- function(rust_dir) {
   if (length(files) < 1L) {
     fail(sprintf("No Rust files were found under %s.", rust_dir))
   }
-  files <- normalizePath(files, winslash = "/", mustWork = TRUE)
+  files <- normalizePath(files, winslash = "/", mustWork = FALSE)
+  inside <- startsWith(files, paste0(rust_dir, "/"))
+  files <- files[inside]
   rel <- substring(files, nchar(rust_dir) + 2L)
 
   excluded_dirs <- c("target", "vendor", "\\.cargo", "\\.cargo-home")
@@ -277,7 +279,6 @@ discover_rust_dependency_files <- function(rust_dir) {
   }
 
   deps <- file.path("rust", rel)
-  deps <- gsub("\\\\", "/", deps)
   sort(unique(deps))
 }
 
