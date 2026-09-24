@@ -6,10 +6,10 @@ mod timers;
 
 use ndarray::prelude::*;
 use ndarray::{Array1, Zip};
-use rand::{Rng, RngCore, SeedableRng};
+use rand::{Rng, RngExt, SeedableRng};
 use rand_pcg::Pcg64Mcg;
-use rayon::prelude::*;
 use rayon::ThreadPool;
+use rayon::prelude::*;
 use std::path::Path;
 use timers::{EchoTimer, PeriodicTimer};
 
@@ -118,11 +118,7 @@ fn fangs(
                                 0.0
                             } else {
                                 let jj = solution.0[j];
-                                if jj >= zz.ncols() {
-                                    0.0
-                                } else {
-                                    zz[[i, jj]]
-                                }
+                                if jj >= zz.ncols() { 0.0 } else { zz[[i, jj]] }
                             }
                         })
                     })
@@ -694,11 +690,7 @@ fn compute_loss_permutations(z1: &RMatrix<f64>, z2: &RMatrix<f64>, a: f64) {
                     let aa = c1.iter().zip(c2); // std::iter::zip(c1, c2);
                     loss += aa.fold(0.0, |sum, (&x1, &x2)| {
                         sum + if x1 != x2 {
-                            if x1 > x2 {
-                                a
-                            } else {
-                                b
-                            }
+                            if x1 > x2 { a } else { b }
                         } else {
                             0.0
                         }
@@ -802,11 +794,7 @@ fn flip_bit(
         for i2 in 0..w.ncols() {
             let bit_in_sample = if i2 >= zz.ncols() { 0.0 } else { zz[[i0, i2]] };
             w[[i1, i2]] += if old_bit == 0.0 {
-                if bit_in_sample == 0.0 {
-                    a
-                } else {
-                    -b
-                }
+                if bit_in_sample == 0.0 { a } else { -b }
             } else if bit_in_sample == 0.0 {
                 -a
             } else {
@@ -840,11 +828,7 @@ fn update_w(
     for i2 in 0..w.ncols() {
         let bit_in_sample = if i2 >= zz.ncols() { 0.0 } else { zz[[i0, i2]] };
         w[[i1, i2]] += if bit == 0.0 {
-            if bit_in_sample == 0.0 {
-                a
-            } else {
-                -b
-            }
+            if bit_in_sample == 0.0 { a } else { -b }
         } else if bit_in_sample == 0.0 {
             -a
         } else {
@@ -901,11 +885,7 @@ fn make_weight_matrix(y1: ArrayView2<f64>, y2: ArrayView2<f64>, a: f64) -> Optio
             let x2 = if i2 >= k2 { zero_view } else { y2.column(i2) };
             vec.push(Zip::from(&x1).and(&x2).fold(0.0, |acc, &aa, &bb| {
                 acc + if aa != bb {
-                    if aa > bb {
-                        a
-                    } else {
-                        b
-                    }
+                    if aa > bb { a } else { b }
                 } else {
                     0.0
                 }

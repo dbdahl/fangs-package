@@ -290,13 +290,14 @@ discover_rust_dependency_files <- function(rust_dir) {
   files <- files[inside]
   rel <- substring(files, nchar(rust_dir) + 2L)
 
-  excluded_dirs <- c("target", "vendor", "\\.cargo", "\\.cargo-home")
-  excluded_pattern <- paste0(
+  excluded_dirs <- c("target", "vendor")
+  excluded_dir_pattern <- paste0(
     "(^|/)(",
     paste(excluded_dirs, collapse = "|"),
     ")/"
   )
-  keep <- !grepl(excluded_pattern, rel)
+  hidden_path_pattern <- "(^|/)[.][^/]+($|/)"
+  keep <- !grepl(excluded_dir_pattern, rel) & !grepl(hidden_path_pattern, rel)
   rel <- rel[keep]
   rel <- rel[!(rel %in% c("librust.a", "roxido.txt"))]
   if (length(rel) < 1L) {
@@ -344,8 +345,26 @@ render_makevars <- function(template_path, output_path, substitutions) {
   writeLines(lines, con = output_path, useBytes = TRUE)
 }
 
+make_shell_quote <- function(x) {
+  escaped <- gsub("\"", "\\\\\"", x, fixed = TRUE)
+  paste0("\"", escaped, "\"")
+}
+
+render_env_assignments <- function(vars) {
+  if (length(vars) < 1L) {
+    return("")
+  }
+  assignments <- sprintf(
+    "%s=%s",
+    names(vars),
+    vapply(vars, make_shell_quote, character(1))
+  )
+  paste(assignments, collapse = " ")
+}
+
 render_platform_makevars <- function(
   cargo_path,
+  rustc_path,
   rust_dir = file.path("src", "rust"),
   cran_vendor_mode = FALSE,
   host_triple = ""
@@ -353,12 +372,15 @@ render_platform_makevars <- function(
   sysname <- Sys.info()[["sysname"]]
   makevars <- file.path("src", "Makevars")
   makevars_win <- file.path("src", "Makevars.win")
-  cargo_env <- ""
+  cargo_env_vars <- character()
   if (isTRUE(cran_vendor_mode)) {
-    cargo_env <- "CARGO_HOME=\"$(CURDIR)/$(RUST_DIR)/.cargo-home\""
+    cargo_env_vars <- c(
+      RUSTC = rustc_path,
+      CARGO_HOME = "$(CURDIR)/$(RUST_DIR)/.cargo-home"
+    )
   }
-  escaped_cargo <- gsub("\"", "\\\\\"", cargo_path, fixed = TRUE)
-  cargo_sub <- paste0("\"", escaped_cargo, "\"")
+  cargo_env <- render_env_assignments(cargo_env_vars)
+  cargo_sub <- make_shell_quote(cargo_path)
   unlink(c(makevars, makevars_win), force = TRUE)
 
   if (identical(sysname, "Windows")) {
@@ -372,10 +394,12 @@ render_platform_makevars <- function(
       target_flag <- ""
       cargo_pre <- 'unset CARGO_BUILD_TARGET && export RUSTFLAGS="-C link-self-contained=yes" && '
     } else {
-      note(
-        "Non-GNU Windows host detected; cross-compiling with --target=x86_64-pc-windows-gnu."
-      )
-      target_decl <- "TARGET = x86_64-pc-windows-gnu"
+      target <- windows_target()
+      note(sprintf(
+        "Non-GNU Windows host detected; cross-compiling with --target=%s.",
+        target
+      ))
+      target_decl <- paste("TARGET =", target)
       rust_target_lib <- "$(RUST_DIR)/target/$(TARGET)/release/librust.a"
       target_flag <- " --target=$(TARGET)"
       cargo_pre <- ""
@@ -405,6 +429,18 @@ render_platform_makevars <- function(
       )
     )
     note("Rendered src/Makevars from template.")
+  }
+}
+
+windows_target <- function(){
+  if(grepl("aarch", R.version$platform)){
+    "aarch64-pc-windows-gnullvm"
+  } else if(grepl("clang", Sys.getenv('R_COMPILED_BY'))){
+    "x86_64-pc-windows-gnullvm"
+  } else if(grepl("i386", R.version$platform)){
+    "i686-pc-windows-gnu"
+  } else {
+    "x86_64-pc-windows-gnu"
   }
 }
 
@@ -451,6 +487,7 @@ if (cran_vendor_mode) {
 
 render_platform_makevars(
   cargo$path,
+  rustc$path,
   cran_vendor_mode = cran_vendor_mode,
   host_triple = host_triple
 )

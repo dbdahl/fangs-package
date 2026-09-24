@@ -55,7 +55,7 @@ pub use rbindings::SEXP;
 
 use rbindings::*;
 use std::collections::HashMap;
-use std::ffi::{c_char, c_void, CStr, CString, NulError};
+use std::ffi::{CStr, CString, NulError, c_char, c_void};
 use std::marker::PhantomData;
 
 trait SEXPMethods {
@@ -479,11 +479,7 @@ impl R {
 
     /// Convert a `bool` into a logical value (stored as an `i32`).
     pub fn as_logical(x: bool) -> i32 {
-        if x {
-            Rboolean_TRUE
-        } else {
-            Rboolean_FALSE
-        }
+        if x { Rboolean_TRUE } else { Rboolean_FALSE }
     }
 
     /// Checks if an `f64` is R's `NaN` value.
@@ -597,11 +593,7 @@ impl RObject {
 
     /// Returns an `Option` which equals `None` if the [`RObject`] reference is null.
     pub fn as_option(&self) -> Option<&Self> {
-        if self.is_null() {
-            None
-        } else {
-            Some(self)
-        }
+        if self.is_null() { None } else { Some(self) }
     }
 
     /// Attempts to recharacterize as a reference to an [`RScalar`] (i.e., a vector of length 1).
@@ -875,7 +867,11 @@ impl RFunction {
         let expression = pc.protect(expression);
         let mut p_out_error: i32 = 0;
         let sexp = pc.protect(unsafe {
-            R_tryEval(expression, R_GetCurrentEnv(), std::ptr::from_mut(&mut p_out_error))
+            R_tryEval(
+                expression,
+                R_GetCurrentEnv(),
+                std::ptr::from_mut(&mut p_out_error),
+            )
         });
         match p_out_error {
             0 => Ok(unsafe { sexp.transmute(pc) }),
@@ -1976,7 +1972,12 @@ impl<T> RArray<T> {
             match dimnames.get(i).unwrap().as_vector() {
                 Ok(names) => {
                     if names.len() != len {
-                        return Err(format!("Element {} of the dimnames list has length {}, but the corresponding dimension is {}.", i, names.len(), len));
+                        return Err(format!(
+                            "Element {} of the dimnames list has length {}, but the corresponding dimension is {}.",
+                            i,
+                            names.len(),
+                            len
+                        ));
                     }
                 }
                 Err(_) => {

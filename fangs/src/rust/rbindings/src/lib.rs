@@ -379,4 +379,3 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn Rf_rnorm(arg1: f64, arg2: f64) -> f64;
 }
-

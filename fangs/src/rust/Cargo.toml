@@ -1,10 +1,10 @@
 [package]
 name = "rust"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 license = "MIT OR Apache-2.0"
 publish = false
-rust-version = "1.88"
+rust-version = "1.85.1"
 
 [lib]
 crate-type = ["staticlib"]
@@ -18,8 +18,8 @@ lto = "thin"
 roxido = { path="roxido" }
 lapjv = { path="lapjv-rust" }
 ndarray = "0.17.2"
-rand = "0.9.0"
-rand_pcg = "0.9.0"
+rand = "0.10.0"
+rand_pcg = "0.10.0"
 rayon = "1.7.0"
-itertools = "0.14.0"
+itertools = "0.15.0"
 approx = "0.5.1"

@@ -1,17 +1,21 @@
-0.2.24 (2025-03-14)
+0.2.25 (2026-09-24)
+  * Latest Roxido framework, which fixes installation on Windows ARM64.
+  * Updated Rust dependencies and moved to Rust edition 2024.
+
+0.2.24 (2026-03-14)
   * Latest Roxido framework.
 
-0.2.23 (2025-03-11)
+0.2.23 (2026-03-11)
   * Latest Roxido framework.
 
-0.2.22 (2025-03-07)
+0.2.22 (2026-03-07)
   * Latest Roxido framework.
 
 0.2.21 (2025-04-10)
   * Update paper citation.
   * Do not specify a build target and rely on the default choice.
   * Latest Roxido framework.
-  
+
 0.2.18 (2025-03-21)
   * Internal update to track latest roxido framework.
   * Update for CRAN compliance regarding "WARNINGs about calling bad
